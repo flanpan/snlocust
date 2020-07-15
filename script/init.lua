@@ -1,3 +1,2 @@
 
-print('111')
---log('agent:', uid, 'login ok.')
+log('agent:', uid, 'login ok.')

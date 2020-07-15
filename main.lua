@@ -24,10 +24,11 @@ function cmds.run_script(script)
     end
 end
 
-skynet.cache.mode "OFF"
+-- skynet.cache.mode "OFF"
 
 skynet.start(function()
     skynet.newservice("debug_console",8000)
+    skynet.newservice("web")
 	skynet.dispatch("lua", function(session, address, cmd, ...)
         cmd = cmd:lower()
 		local f = cmds[cmd]

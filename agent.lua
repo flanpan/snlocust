@@ -1,14 +1,18 @@
 local skynet = require "skynet"
 local uid = ...
+
 local env = {
-    log = skynet.error,
-    uid = uid
+    log = function(...) skynet.error('['..uid..']', ...) end,
+    uid = uid,
+    req = function() end,
+    res = function() end,
 }
 
 local cmds = {}
 function cmds.run_script(name)
-    local _, err = loadfile('script/'..name , 'bt', env)
+    local f, err = loadfile('script/'..name , 'bt', env)
     if err then skynet.error(err) end
+    f()
 end
 
 skynet.start(function(id)
