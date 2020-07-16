@@ -5,11 +5,16 @@ var WebClient = function(io) {
     var ws = new WebSocket('ws://'+location.hostname+':8002');
     ws.onopen = function(){
     console.log("open");
-    ws.send('WebSocket'); 
+    ws.send(JSON.stringify({type:'scripts'})); 
     };
     ws.onmessage = function(ev){
-    console.log(ev.data);
-    };
+        let data = JSON.parse(ev.data)
+        switch(data.type) {
+            case 'scripts':
+                //$('#scripts').
+                break
+        }
+    }
     ws.onclose = function(ev){
     console.log("close");
     };
@@ -66,8 +71,8 @@ var WebClient = function(io) {
   //report status
   this.socket.on('webreport', function(snum,suser,stimeData,sincrData) {
   	//doReport(timeData);
-    $('#agentinput').val(snum);
-    $('#maxuserinput').val(suser);
+    $('#firstuserid').val(snum);
+    $('#usercount').val(suser);
     updateIncrData(sincrData);
     updateTimesData(snum,suser,stimeData);
   });
@@ -127,11 +132,11 @@ WebClient.prototype = {
     var nodeId = nodeId;
     this.nodes[nodeId] = node;
     this.stats.nodes++;
-    if (this.stats.nodes>=parseInt($('#agentinput').val())){
-    	$('#ready-button').val('ReReady');
+    if (this.stats.nodes>=parseInt($('#firstuserid').val())){
+    	$('#reload').val('ReReady');
     	$('#run-button').show();
     } else {
-    	$('#ready-button').val('Readying');
+    	$('#reload').val('Readying');
     	$("#run-button").css('display','none');
     }
   },

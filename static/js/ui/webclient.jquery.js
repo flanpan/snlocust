@@ -136,11 +136,11 @@ $(document).ready(function() {
 	
   web_client.resize();
   
-  $("#ready-button").click(function() {
+  $("#reload").click(function() {
       web_client.stats = {messages: 0, nodes: 0, start:new Date()};
       web_client.socket.emit('exit4reready');
-  		var agent = $("#agentinput").val();
-  		var user = $("#maxuserinput").val();
+  		var agent = $("#firstuserid").val();
+  		var user = $("#usercount").val();
   		var message = {agent:agent,maxuser:user};
   		web_client.socket.emit('ready',message);
   		$(this).attr('disable',true);
@@ -149,8 +149,8 @@ $(document).ready(function() {
   });
   
   $("#run-button").click(function() {
-		var agent = $("#agentinput").val();
-		var maxuser = $("#maxuserinput").val();
+		var agent = $("#firstuserid").val();
+		var maxuser = $("#usercount").val();
     var script = $("#robotinput").val();
 		var message = {agent:agent,maxuser:maxuser,script:script};
 		web_client.socket.emit('run',message);

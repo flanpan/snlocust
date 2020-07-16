@@ -6,5 +6,5 @@ lua_cpath = root .. "luaclib/?.so;"
 
 root = "./"
 luaservice = luaservice .. root.."?.lua;"
-lua_path = lua_path .. root.."?.lua;"..root.."script/?.lua"
+lua_path = lua_path .. root.."?.lua;"..root.."script/?.lua;"..root.."3rd/?.lua;"
 snax = root.."?.lua;"
