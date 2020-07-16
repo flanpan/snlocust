@@ -1,16 +1,13 @@
 <html>
 
 <head>
-    <title>Pomelo Robot Console</title>
+    <title>Skynet Load Test</title>
     <link rel="stylesheet" type="text/css" href="css/web_client.css" />
     <link rel="stylesheet" type="text/css" href="css/colors.css" />
     <script src="/js/lib/jquery.min.js"></script>
-    <script src="/js/lib/socket.io.js"></script>
     <script src="/js/lib/underscore.min.js"></script>
-    <script src="/js/nodeclient.js"></script>
     <script src="/js/webclient.js"></script>
     <script src="/js/lib/scrollTo.jquery.js"></script>
-    <script src="/js/ui/renderers.jquery.js"></script>
     <script src="/js/ui/webclient.jquery.js"></script>
     <script src="/js/ui/layout.js"></script>
     <script src="/js/ui/graph.js"></script>
@@ -48,7 +45,7 @@
                     </div>
                     <div class='dspan'>
                         <div style="float: left; width: 100%;">
-                            <div style="float: left"> <select id='scripts'></select>&nbsp;&nbsp;<button>Run</button></div>
+                            <div style="float: left"> <select id='scripts'></select>&nbsp;&nbsp;<button id="run_stop">Run</button></div>
                             <!-- <div style="width: 90%;">
                                 <textarea style="width: 380px;" value='' id="robotinput" /></textarea>
                                 <input type="button" class="add-button" style="float: none" id="reload" style=""

@@ -40,8 +40,6 @@ function updateGraph(chart,targetName) {
 
 }
 
-var sumshow = 'none';
-
 function updateDetailAgent(_totalAgentSum,title){
 	for (var agent in _totalAgentSum) {
 		var target = $("#sum_"+agent);
@@ -56,18 +54,6 @@ function updateDetailAgent(_totalAgentSum,title){
   	var self = $(this).parent().parent().parent().parent().css('display','none');
  });
 };
-
-function showDetailAgent(){
-	sumshow = '';
-	$("#summary_div").css('display',sumshow);
-	$("#table_img").css('display',sumshow);
-	$("#table_img").click(function(){
-		sumshow = 'none';
-		$(this).css('display',sumshow);
-		$("#summary_div").css('display',sumshow);
-	});
-};
-
 
 function updateAvgAgent(everyAgentavgDatas,title){
 	for (var index in everyAgentavgDatas) {
@@ -86,32 +72,6 @@ function updateAvgAgent(everyAgentavgDatas,title){
   };
 };
 
-var avgshow = 'none';
-
-function showDetailAgentAvg(){
-	avgshow = '';
-	$("#avg_div").css('display',avgshow);
-	$("#avg_img").css('display',avgshow);
-	$("#avg_img").click(function(){
-		avgshow = 'none';
-		$(this).css('display',avgshow);
-		$("#avg_div").css('display',avgshow);
-	});
-};
-
-var qsshow = 'none';
-
-function showDetailAgentQs(){
-	qsshow = '';
-	$("#qs_div").css('display',qsshow);
-	$("#qs_img").css('display',qsshow);
-	$("#qs_img").click(function(){
-		qsshow = 'none';
-		$(this).css('display',qsshow);
-		$("#qs_div").css('display',qsshow);
-	});
-};
-
 function updateEveryAgent(everyAgentavgDatas,divname,title){
 	for (var index in everyAgentavgDatas) {
 		var chart = everyAgentavgDatas[index];
@@ -125,28 +85,6 @@ function updateEveryAgent(everyAgentavgDatas,divname,title){
 			$("#qs_div").append(_dom);
 		};
     updateGraph(chart,"dqs_"+uid);
-  };
-  $(".close").click(function() {
-  	var self = $(this).parent().parent().parent().parent().css('display','none');
- });
-};
-
-
-function updateEveryAgent1(everyAgentqsDatas,divname,title){
-	for (var index in everyAgentqsDatas) {
-		var chart = everyAgentqsDatas[index];
-		var uid = chart.uid;
-		var target = $("#"+uid);
-		if (!!target.html()) {
-		} else {
-			var _dom = $("#avg_template").clone();
-			_dom.find(".screen-label").html(uid +' ' + title);
-			_dom.find(".avgrestime").attr("id", uid);
-			_dom.css('display','block');
-			$("#" + divname).append(_dom);
-		};
-    //target = $();
-    updateGraph(chart,uid);
   };
   $(".close").click(function() {
   	var self = $(this).parent().parent().parent().parent().css('display','none');

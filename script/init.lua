@@ -1,2 +1,4 @@
-
-log('agent:', uid, 'login ok.')
+local skynet = require "skynet"
+local uid, script = ...
+skynet.error('agent:', uid, 'login ok.')
+require(script)

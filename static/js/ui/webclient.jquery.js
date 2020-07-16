@@ -2,7 +2,7 @@
  * Instantiates WebClient(), binds document.ready()
  */
 
-var web_client = new WebClient(io);
+var web_client = new WebClient();
 
 var REPORT_INTERVAL = 1000;
 
@@ -160,20 +160,4 @@ $(document).ready(function() {
   	$('#run-button').css('display','none');
     $("#errorinput").html('');
   });
-  
-  $("#sumbtn").click(function() {
-		web_client.detailTimer = true;
-  	showDetailAgent();
-  });
-  
-  $("#avgbtn").click(function() {
-		web_client.detailTimer = true;
-  	showDetailAgentAvg();
-  });
-  
-  $("#qsbtn").click(function() {
-		web_client.detailTimer = true;
-  	showDetailAgentQs();
-  });
-
 });

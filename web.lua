@@ -5,31 +5,30 @@ local sockethelper = require "http.sockethelper"
 local websocket = require "http.websocket"
 local urllib = require "http.url"
 local json = require "dkjson"
+local lfs = require "lfs"
+local codecache = require "skynet.codecache"
+require "skynet.manager"
 
 local REPORT_STATS_INTERVAL = 100 --1s
 local ws_socks = {}
 local cmds = {}
+local agents = {}
 local stats = {
-    start_time = 0,
-    stop_time = 0,
+    start_time = nil,
     user_count = 0,
     msgs = {}-- max, min, sum, count
 }
 local update_stats = false
 
-local function ws_send(sock, type, msg)
-    websocket.write(sock, json.encode {type = type, msg = msg})
+local function ws_send(sock, type, body)
+    websocket.write(sock, json.encode {type = type, body = body})
 end
 
-local function ws_broadcast(type, msg)
-    msg = json.encode {type = type, msg = msg}
-    for sock, _ in pairs(ws_socks) do websocket.write(sock, msg) end
-end
-
-local function scripts()
-    local l = {}
-    os.execute('ls script')
-    return l
+local function ws_broadcast(type, body)
+    local msg = json.encode {type = type, body = body}
+    for _, sock in pairs(ws_socks) do 
+        websocket.write(sock, msg) 
+    end
 end
 
 skynet.register_protocol {
@@ -42,6 +41,16 @@ skynet.register_protocol {
         ws_broadcast('log', msg)
 	end
 }
+
+local function scripts()
+    local l = {}
+    for file in lfs.dir('script') do
+        if string.sub(file, -4) == '.lua' then
+            table.insert(l,file)
+        end
+    end
+    return l
+end
 
 local function http_response(id, write, ...)
 	local ok, err = httpd.write_response(write, ...)
@@ -68,8 +77,11 @@ local function do_http_request(sock, addr)
             else 
                 code = 404
             end
-            local header = {}
-            http_response(sock, write, code, data)
+            local header
+            if string.sub(path,-4) == '.css' then
+                header = {['Content-Type']='text/css;charset=utf-8'}
+            end
+            http_response(sock, write, code, data, header)
         end
     else
         if url == sockethelper.socket_error then
@@ -88,10 +100,15 @@ local function start_http(port)
 end
 
 local function process_ws_msg(sock, msg)
-    if msg.type == 'scripts' then 
-        ws_send(sock, {type='scripts', msg = scripts()})
-    elseif msg.type == 'reload_scripts' then
-        ws_send(sock, {type='scripts', msg = scripts()})
+    local type = msg.type
+    local body = msg.body
+    if type == 'start' then
+        stats.start_time = skynet.now()
+        cmds.start(body.id_start, body.id_count, body.per_sec, body.script)
+    elseif type == 'stop' then
+        stats.start_time = nil
+        ws_broadcast('stats', stats)
+        cmds.stop()
     end
 end
 
@@ -100,10 +117,12 @@ local function start_ws(port)
     socket.start(id , function(sock, addr) 
         local handle = {}
         function handle.connect(sock) ws_socks[sock] = sock end
+        function handle.handshake(sock, header, url) ws_send(sock, 'scripts', scripts()) end
         function handle.close(sock, code, reason) ws_socks[sock] = nil end
-        function handle.error(sock) end
+        function handle.error(sock) ws_socks[sock] = nil end
         function handle.message(sock, msg, msg_type)
             msg = json.decode(msg)
+            if not msg then return end
             process_ws_msg(sock, msg)
         end
         local ok, err = websocket.accept(sock, handle, 'ws', addr)
@@ -120,7 +139,7 @@ local function report_stats()
 end
 
 function cmds.stats(data)
-    if stats.end_time or not stats.start_time then return end
+    if not stats.start_time then return end
     update_stats = true
     if data.user_count then stats.user_count = data.user_count end
     local msgs = data.msgs
@@ -135,8 +154,32 @@ function cmds.stats(data)
     end
 end
 
+function cmds.start(id_start, id_count, per_sec, script)
+    cmds.stop()
+    codecache.clear()
+    for id = id_start, id_count do
+        agents[id] = skynet.newservice('agent', id, script)
+    end
+end
+
+function cmds.stop()
+    for id, addr in pairs(agents) do
+        skynet.kill(addr)
+        skynet.error('agent:', id, 'exit.')
+    end
+    agents = {}
+end
+
 skynet.start(function()
     start_http(8001)
     start_ws(8002)
     skynet.timeout(REPORT_STATS_INTERVAL, report_stats)
+    --[[
+    skynet.dispatch("lua", function(session, address, cmd, ...)
+        cmd = cmd:lower()
+		local f = cmds[cmd]
+        if not f then error(string.format("Unknown command %s", tostring(cmd))) end
+	    skynet.ret(skynet.pack(f(...)))
+    end)
+    --]]
 end)
