@@ -1,3 +1,6 @@
 [submodule "3rd/skynet"]
 	path = 3rd/skynet
 	url = https://github.com/cloudwu/skynet.git
+[submodule "3rd/lua-resty-template"]
+	path = 3rd/lua-resty-template
+	url = https://github.com/bungle/lua-resty-template.git
