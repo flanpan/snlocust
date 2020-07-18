@@ -68,7 +68,12 @@
                             <span style="color:#8a8a8a; font-size:12px;">(setting this will override the host on all User classes)</span></label>
                         {% end %}
                     </label>
-                    <input type="text" name="host" id="host" class="val" autocapitalize="off" autocorrect="off" value="{{ host  or "" }}"/><br>
+                    <!-- <input type="text" name="host" id="host" class="val" autocapitalize="off" autocorrect="off" value="{{ host  or "" }}"/><br> -->
+                    <select name="Script" id="host" class="val" autocapitalize="off" autocorrect="off">
+                        {% for _, script in pairs(scripts) do %}
+                            <option>{{script}}</option>
+                        {% end %}
+                    </select>
                     {% if is_step_load then %}
                     <label for="step_user_count">Number of users to increase by step</label>
                     <input type="text" name="step_user_count" id="step_user_count" class="val" value="{{ step_users or "" }}"/><br>
@@ -109,6 +114,7 @@
                 <ul class="tabs container">
                     <li><a href="#">Statistics</a></li>
                     <li><a href="#" class="chart-tab-link">Charts</a></li>
+                    <li><a href="#" class="counter-tab-link">Counter</a></li>
                     <li><a href="#">Failures</a></li>
                     <li><a href="#">Exceptions</a></li>
                     <li><a href="#">Download Data</a></li>
@@ -142,6 +148,10 @@
                 </div>
                 <div id="charts" style="display:none;">
                     <div class="charts-container"></div>
+                    <p class="note">Note: There is no persistence of these charts, if you refresh this page, new charts will be created.</p>
+                </div>
+                <div id="counter" style="display:none;">
+                    <div class="counter-container"></div>
                     <p class="note">Note: There is no persistence of these charts, if you refresh this page, new charts will be created.</p>
                 </div>
                 <div style="display:none;">

@@ -47,6 +47,11 @@ $("ul.tabs").tabs("div.panes > div").on("onClick", function(event) {
         responseTimeChart.resize();
         usersChart.resize();
     }
+    if (event.target == $(".counter-tab-link")[0]) {
+        for(var name in counterChart) {
+            counterChart[name].resize()
+        }
+    }
 });
 
 var stats_tpl = $('#stats-template');
@@ -162,6 +167,7 @@ $("#workers .stats_label").click(function(event) {
 var rpsChart = new LocustLineChart($(".charts-container"), "Total Requests per Second", ["RPS", "Failures/s"], "reqs/s", ['#00ca5a', '#ff6d6d']);
 var responseTimeChart = new LocustLineChart($(".charts-container"), "Response Times (ms)", ["Median Response Time", "95% percentile"], "ms");
 var usersChart = new LocustLineChart($(".charts-container"), "Number of Users", ["Users"], "users");
+var counterChart = {}
 
 function updateStats() {
     $.get('./stats/requests', function (report) {
@@ -177,6 +183,16 @@ function updateStats() {
             rpsChart.addValue([total.current_rps, total.current_fail_per_sec]);
             responseTimeChart.addValue([report.current_response_time_percentile_50, report.current_response_time_percentile_95]);
             usersChart.addValue([report.user_count]);
+
+            // update counter
+            var counter = report.counter
+            if(counter) {
+                for(var name in counter) {
+                    if(!counterChart[name])
+                        counterChart[name] = new LocustLineChart($(".counter-container"), name, [name], name);
+                    counterChart[name].addValue([counter[name]])
+                }
+            }
         } else {
             appearStopped();
         }

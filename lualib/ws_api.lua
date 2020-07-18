@@ -24,7 +24,7 @@ local function process_ws_msg(sock, msg)
         cmds.start(body.id_start, body.id_count, body.per_sec, body.script)
     elseif type == 'stop' then
         stats.start_time = nil
-        ws_broadcast('stats', stats)
+        broadcast('stats', stats)
         cmds.stop()
     end
 end

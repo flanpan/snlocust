@@ -5,11 +5,13 @@ local sockethelper = require "http.sockethelper"
 local urllib = require "http.url"
 local template = require "resty.template"
 local json = require "dkjson"
+local dataset = require "dataset"
 
 local HEADER_JSON = {['content-type'] = 'application/json;charset=utf-8'}
-
-local api = {}
+local STATE = { READY = 'ready', HATCHING = 'hatching', RUNNING = 'running', STOPPING = 'stopping', STOPPED = 'stopped'}
+local cmds
 local route = {}
+
 local function http_response(id, write, ...)
 	local ok, err = httpd.write_response(write, ...)
 	if not ok then skynet.error(string.format("fd = %d, %s", id, err)) end
@@ -56,17 +58,10 @@ local function do_http_request(sock, addr)
     socket.close(sock)
 end
 
-function api.start_http(port)
-    local id = socket.listen("0.0.0.0", port)
-	skynet.error("Listen web port", port)
-    socket.start(id , function(sock, addr) do_http_request(sock, addr) end)
-end
-
 ----------- process route -------------
-
 route['/'] = function()
     local options = {
-        state = 'ready', --["ready", "hatching", "running", "cleanup", "stopping", "stopped", "missing"]
+        state = dataset.state(),
         is_distributed = false,
         user_count = 1,
         version = 1,
@@ -77,19 +72,30 @@ route['/'] = function()
         step_users = 1,
         step_time = 1,
         worker_count = 0,
-        is_step_load = false
+        is_step_load = false,
+        scripts = cmds.scripts()
     }
     local html = template.compile('static/index.html')(options)
     return 200, html
 end
 
 route['/swarm'] = function()
-
+    skynet.fork(function()
+        cmds.start(function()
+            dataset.state(STATE.RUNNING)
+        end)
+    end)
+    dataset.state(STATE.HATCHING)
     return 200
 end
 
 route['/stop'] = function()
-
+    skynet.fork(function()
+        cmds.stop(function()
+            dataset.state(STATE.STOPPED)
+        end)
+    end)
+    dataset.state(STATE.STOPPING)
     return 200
 end
 
@@ -107,33 +113,7 @@ route['/stats/failures/csv'] = function()
 end
 
 route['/stats/requests'] = function()
-    local report = {
-        state = 'ready',
-        user_count = 1,
-        is_distributed = false,
-        stats = {},
-        errors = {},
-        fail_ratio = 0,
-        total_rps = 0,
-        current_response_time_percentile_50 = nil,
-        current_response_time_percentile_95 = nil,
-    }
-    table.insert(report.stats, {
-        avg_content_length = 0,
-        avg_response_time = 0,
-        current_fail_per_sec = 0,
-        current_rps = 0,
-        max_response_time = 0,
-        median_response_time = 0,
-        method = nil,
-        min_response_time = 0,
-        name = "Aggregated",
-        ninetieth_response_time = 0,
-        num_failures = 0,
-        num_requests = 0,
-        safe_name = "Aggregated"
-    })
-    return 200, json.encode(report), HEADER_JSON
+    return 200, json.encode(dataset.report()), HEADER_JSON
 end
 
 route['/exceptions'] = function()
@@ -143,6 +123,17 @@ end
 
 route['/exceptions/csv'] = function()
     return 200
+end
+
+-------api-------
+local api = {}
+
+function api.start_http(_cmds, port)
+    cmds = _cmds
+    dataset.state(STATE.READY)
+    local id = socket.listen("0.0.0.0", port)
+	skynet.error("Listen web port", port)
+    socket.start(id , function(sock, addr) do_http_request(sock, addr) end)
 end
 
 return api

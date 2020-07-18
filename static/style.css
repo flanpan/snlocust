@@ -180,7 +180,7 @@ a:hover {
     margin-top: 20px;
     font-size: 16px;
 }
-.start input.val, .edit input.val {
+.start input.val, .edit input.val, .start select.val, .edit select.val {
     border: none;
     background: #fff;
     height: 52px;
@@ -344,6 +344,25 @@ a:hover {
     line-height: 18px;
     font-family: monospace;
     white-space: pre;
+}
+
+#counter {
+    width: 100%;
+}
+#counter .chart {
+    height: 350px;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+    border: 1px solid #11271e;
+    border-radius: 3px;
+}
+#counter .note {
+    color: #b3c3bc;
+    margin-bottom: 30px;
+    border-radius: 3px;
+    background: #132b21;
+    padding: 10px;
+    display: inline-block;
 }
 
 #charts {

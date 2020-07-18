@@ -1,5 +1,5 @@
 local skynet = require "skynet"
-local uid, script = ...
+local uid, timeout, script = ...
 
 local cmds = {}
 log = skynet.error
@@ -11,7 +11,9 @@ skynet.start(function()
         if not f then error(string.format("Unknown command %s", tostring(cmd))) end
 	    skynet.ret(skynet.pack(f(...)))
     end)
-    local f, err = loadfile('script/init.lua', 'bt', _G)
-    if err then skynet.error(err) end
-    f(uid, script)
+    skynet.timeout(timeout * 100, function()
+        local f, err = loadfile('script/init.lua', 'bt', _G)
+        if err then skynet.error(err) end
+        f(uid, script)
+    end)
 end)

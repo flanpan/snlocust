@@ -1,4 +1,0 @@
-local stats = {}
-
-
-return stats

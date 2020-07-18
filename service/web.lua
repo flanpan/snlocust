@@ -64,7 +64,8 @@ function cmds.start(id_start, id_count, per_sec, script)
     cmds.stop()
     codecache.clear()
     for id = id_start, id_count do
-        agents[id] = skynet.newservice('agent', id, script)
+        local timeout = math.abs((id-1) // per_sec)
+        agents[id] = skynet.newservice('agent', id, timeout, script)
     end
 end
 
@@ -77,7 +78,7 @@ function cmds.stop()
 end
 
 skynet.start(function()
-    http_api.start_http(8001)
+    http_api.start_http(cmds, 8001)
     ws_api.start_ws(8002)
     -- skynet.timeout(REPORT_STATS_INTERVAL, report_stats)
     skynet.dispatch("lua", function(session, address, cmd, ...)
