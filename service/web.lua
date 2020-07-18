@@ -1,13 +1,11 @@
 local skynet = require "skynet"
-local lfs = require "lfs"
-local codecache = require "skynet.codecache"
+
 local http_api = require "http_api"
 local ws_api = require "ws_api"
-require "skynet.manager"
 
 local REPORT_STATS_INTERVAL = 100 --1s
 local cmds = {}
-local agents = {}
+
 local stats = {
     start_time = nil,
     user_count = 0,
@@ -25,16 +23,6 @@ skynet.register_protocol {
         ws_api.broadcast('log', msg)
 	end
 }
-
-function cmds.scripts()
-    local l = {}
-    for file in lfs.dir('script') do
-        if string.sub(file, -4) == '.lua' then
-            table.insert(l,file)
-        end
-    end
-    return l
-end
 
 -- local function report_stats()
 --     if update_stats then 
@@ -60,25 +48,8 @@ function cmds.stats(data)
     end
 end
 
-function cmds.start(id_start, id_count, per_sec, script)
-    cmds.stop()
-    codecache.clear()
-    for id = id_start, id_count do
-        local timeout = math.abs((id-1) // per_sec)
-        agents[id] = skynet.newservice('agent', id, timeout, script)
-    end
-end
-
-function cmds.stop()
-    for id, addr in pairs(agents) do
-        skynet.kill(addr)
-        skynet.error('agent:', id, 'exit.')
-    end
-    agents = {}
-end
-
 skynet.start(function()
-    http_api.start_http(cmds, 8001)
+    http_api.start_http(8001)
     ws_api.start_ws(8002)
     -- skynet.timeout(REPORT_STATS_INTERVAL, report_stats)
     skynet.dispatch("lua", function(session, address, cmd, ...)

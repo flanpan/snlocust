@@ -4,7 +4,7 @@
 all : linux
 
 linux :
-	gcc -g -Wall -fPIC --shared -o lfs.so lfs.c
+	gcc -g -Wall -std=gnu99 -fPIC --shared -o lfs.so lfs.c -I../skynet/3rd/lua
 
 macosx :
 	gcc -g -Wall --shared -undefined dynamic_lookup -o lfs.so lfs.c

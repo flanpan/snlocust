@@ -11,9 +11,9 @@
             <img src="./static/img/logo.png?v={{ version }}" class="logo" />
             <div class="boxes">
                 <div class="top_box box_url">
-                    <div class="label">HOST</div>
-                    <div class="value" id="host_url">
-                        {{ host or "" }}
+                    <div class="label">Script</div>
+                    <div class="value" id="script_top">
+                        {{ script or "" }}
                     </div>
                 </div>
                 <div class="top_box box_status">
@@ -58,18 +58,15 @@
             <div class="padder">
                 <h2>Start new Locust run</h2>
                 <form action="./swarm" method="POST" id="swarm_form">
+                    <label for="first_id">First user ID</label>
+                    <input type="text" name="first_id" id="first_id" class="val" value="{{ first_id or "" }}"/><br>
                     <label for="user_count">Number of total users to simulate</label>
                     <input type="text" name="user_count" id="user_count" class="val" value="{{ num_users or "" }}"/><br>
                     <label for="hatch_rate">Hatch rate <span style="color:#8a8a8a;">(users spawned/second)</span></label>
                     <input type="text" name="hatch_rate" id="hatch_rate" class="val" value="{{ hatch_rate or "" }}"/><br>
-                    <label for="host">
-                        Host <span style="color:#8a8a8a;">(e.g. http://www.example.com)</span>
-                        {% if override_host_warning then %}
-                            <span style="color:#8a8a8a; font-size:12px;">(setting this will override the host on all User classes)</span></label>
-                        {% end %}
-                    </label>
+                    <label for="script">Script </label>
                     <!-- <input type="text" name="host" id="host" class="val" autocapitalize="off" autocorrect="off" value="{{ host  or "" }}"/><br> -->
-                    <select name="Script" id="host" class="val" autocapitalize="off" autocorrect="off">
+                    <select name="script" id="script" class="val" autocapitalize="off" autocorrect="off">
                         {% for _, script in pairs(scripts) do %}
                             <option>{{script}}</option>
                         {% end %}

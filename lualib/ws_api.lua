@@ -30,11 +30,6 @@ local function process_ws_msg(sock, msg)
 end
 
 function api.start_ws(port)
-
-    package.cpath = package.cpath .. ";/Users/fengpan/.vscode/extensions/tangzx.emmylua-0.3.49/debugger/emmy/mac/emmy_core.dylib"
-    local dbg = require("emmy_core")
-    dbg.tcpListen("localhost", 9966)
-
     local id = socket.listen("0.0.0.0", port)
     socket.start(id , function(sock, addr) 
         local handle = {}

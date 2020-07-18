@@ -1,6 +1,6 @@
 $(window).ready(function() {
-    if($("#user_count").length > 0) {
-        $("#user_count").focus().select();
+    if($("#first_id").length > 0) {
+        $("#first_id").focus().select();
     }
 });
 
@@ -26,7 +26,7 @@ $("#box_stop a.reset-button").click(function(event) {
 $("#new_test").click(function(event) {
     event.preventDefault();
     $("#start").show();
-    $("#user_count").focus().select();
+    $("#first_id").focus().select();
 });
 
 $(".edit_test").click(function(event) {
@@ -59,9 +59,9 @@ var errors_tpl = $('#errors-template');
 var exceptions_tpl = $('#exceptions-template');
 var workers_tpl = $('#worker-template');
 
-function setHostName(hostname) {
-    hostname = hostname || "";
-    $('#host_url').text(hostname);
+function setScript(script) {
+    script = script || "";
+    $('#script_top').text(script);
 }
 
 $('#swarm_form').submit(function(event) {
@@ -76,7 +76,7 @@ $('#swarm_form').submit(function(event) {
     $.post($(this).attr("action"), $(this).serialize(),
         function(response) {
             if (response.success) {
-                setHostName(response.host);
+                setScript(response.script);
             }
         }
     );
@@ -89,7 +89,7 @@ $('#edit_form').submit(function(event) {
             if (response.success) {
                 $("body").attr("class", "hatching");
                 $("#edit").fadeOut();
-                setHostName(response.host);
+                setScript(response.script);
             }
         }
     );
