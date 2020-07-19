@@ -44,12 +44,12 @@ end
 local report = new_report()
 
 function dataset.reset()
-    for _, addr in pairs(counter_addr) do
-        skynet.kill(addr)
+    for _, s in pairs(counter_addr) do
+        s.req.reset()
     end
     for _, obj in pairs(stats_addr) do
-        for _, addr in pairs(obj) do
-            skynet.kill(addr)
+        for _, s in pairs(obj) do
+            s.req.reset()
         end
     end
     stats = {}
@@ -85,21 +85,19 @@ function dataset.report()
             if last.min_response_time == 0 then last.min_response_time = stat.min_response_time end
             if last.min_response_time > stat.min_response_time then last.min_response_time = stat.min_response_time end
             if last.max_response_time < stat.max_response_time then last.max_response_time = stat.max_response_time end
-            table.insert(newstats, obj)
+            table.insert(newstats, stat)
         end 
     end
     local size = #newstats
     if size > 0 then
-        last.avg_content_length = last.avg_content_lengthj / size
+        last.avg_content_length = last.avg_content_length / size
         last.avg_response_time = last.avg_response_time / size
-        last.current_fail_per_sec = last.current_fail_per_sec / size
-        last.current_rps = last.current_rps / size
         last.median_response_time = last.median_response_time / size
         last.ninetieth_response_time = last.ninetieth_response_time / size
         report.total_rps = last.current_rps
         report.current_response_time_percentile_50 = last.median_response_time
         report.current_response_time_percentile_95 = last.ninetieth_response_time
-        report.fail_ratio = last.num_failures / (last.num_failures + last.num_requests) * 100
+        report.fail_ratio = last.num_failures / (last.num_failures + last.num_requests)
     end
     table.insert(newstats, last)
     report.stats = newstats
@@ -119,20 +117,20 @@ function dataset.report_stats(data)
 end
 
 function dataset.counter_service(name)
-    local addr = counter_addr[name]
-    if addr then return addr end
+    local s = counter_addr[name]
+    if s then return s.handle end
     local s = snax.newservice('counter', name)
-    counter_addr[name] = s.handle
+    counter_addr[name] = s
     return s.handle
 end
 
 function dataset.stats_service(method, name)
     if not stats_addr[method] then stats_addr[method] = {} end
-    local handle = stats_addr[method][name]
-    if handle then return handle end
-    handle = snax.newservice('stats',method, name).handle
-    stats_addr[method][name] = handle
-    return handle
+    local s = stats_addr[method][name]
+    if s then return s.handle end
+    s = snax.newservice('stats',method, name)
+    stats_addr[method][name] = s
+    return s.handle
 end
 
 return dataset

@@ -12,21 +12,36 @@ local total_response_time = 0
 local total_content_length = 0
 local tmp_fail = 0
 local tmp_reqs = 0
-local data = {
-    method = nil,
-    name = nil,
-    safe_name = nil,
-    num_requests = 0,
-    num_failures = 0,
-    min_response_time = 0,
-    max_response_time = 0,
-    avg_response_time = 0,
-    median_response_time = 0,
-    ninetieth_response_time = 0,
-    avg_content_length = 0,
-    current_fail_per_sec = 0,
-    current_rps = 0,
-}
+local data = {}
+
+local function newdata()
+    return {
+        method = data.method,
+        name = data.name,
+        safe_name = data.safe_name,
+        num_requests = 0,
+        num_failures = 0,
+        min_response_time = 0,
+        max_response_time = 0,
+        avg_response_time = 0,
+        median_response_time = 0,
+        ninetieth_response_time = 0,
+        avg_content_length = 0,
+        current_fail_per_sec = 0,
+        current_rps = 0,
+    }
+end
+
+local function reset()
+    data = newdata()
+    hold = false
+    reqs = {}
+    lastest_res_time = {}
+    total_response_time = 0
+    total_content_length = 0
+    tmp_fail = 0
+    tmp_reqs = 0
+end
 
 local function report()
     if hold then return end
@@ -39,7 +54,7 @@ local function report()
         local tmp = {}
         local size = #lastest_res_time
         for i = 1, size do table.insert(tmp,lastest_res_time[i]) end
-        tmp.sort()
+        table.sort(tmp)
         local idx = math.ceil(size*0.5)
         data.median_response_time = tmp[idx] or 0
         idx = math.ceil(size*0.95)
@@ -51,7 +66,8 @@ end
 
 local function key(uid,id) return uid..'-'..id end
 
-function init(_name, _type)
+function init(_type, _name)
+    reset()
     data.name = _name
     data.method = _type
     -- data.safe_name = _name
@@ -63,14 +79,14 @@ function response.reset()
 end
 
 function accept.time(uid, id)
-    reqs[key(uid,id)] = skynet.time()
+    reqs[key(uid,id)] = skynet.now()
 end
 
 function accept.endtime(uid, id, size, failed)
     local key = key(uid, id)
     local time = reqs[key]
     if not time then return skynet.error(data.method, data.name, uid, id, 'no request data.') end
-    local delay = skynet.time() - time
+    local delay = skynet.now() - time
     total_response_time = total_response_time + delay
     if data.min_response_time > delay then data.min_response_time = delay end
     if data.max_response_time < delay then data.max_response_time = delay end
@@ -87,4 +103,5 @@ function accept.endtime(uid, id, size, failed)
     tmp_reqs = tmp_reqs + 1
     table.insert(lastest_res_time, delay)
     if #lastest_res_time > CACHE_LASTEST_RES_TIME then table.remove(lastest_res_time, 1) end
+    report()
 end

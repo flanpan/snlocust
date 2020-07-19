@@ -43,9 +43,9 @@ function monitor.time(type, name)
     s.post.time(_G.uid, id)
 end
 
-function monitor.endtime(type, name)
+function monitor.endtime(type, name, size, is_failed)
     local s = queryservice(name, type)
-    s.post.endtime(_G.uid, id)
+    s.post.endtime(_G.uid, id, size, is_failed)
 end
 
 return monitor

@@ -21,6 +21,11 @@ function init(_name)
     web = snax.queryservice "web"
 end
 
+function response.reset()
+    count = 0
+    hold = false
+end
+
 function accept.incr()
     count = count + 1
     report()
