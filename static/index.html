@@ -6,6 +6,19 @@
     <link rel="shortcut icon" href="./static/img/favicon.ico" type="image/x-icon"/>
 </head>
 <body class="{{state}}">
+    <script>
+        let ws = new WebSocket('ws://' + location.hostname + ':' + {{ wsport }} )
+        ws.onopen = ()=> console.log('websocket connected.')
+        ws.onclose = (ev)=> console.log('websocket closed.', ev)
+        ws.onerror = (err)=> console.log('websocket error.', ev)
+        ws.onmessage = (ev)=> {
+            let data = JSON.parse(ev.data)
+            switch(data.type) {
+                case 'log':
+                    return console.log(data.body)
+            }
+        }
+    </script>
     <div class="top">
         <div class="top-content container">
             <img src="./static/img/logo.png?v={{ version }}" class="logo" />
