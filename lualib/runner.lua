@@ -69,16 +69,6 @@ function runner.agent_count() return agent_count end
 
 function runner.wsport() return wsport end
 
-function runner.scripts()
-    local scripts = {}
-    for file in lfs.dir('script') do
-        if string.sub(file, -4) == '.lua' then
-            table.insert(scripts,file)
-        end
-    end
-    return scripts
-end
-
 function runner.stop_agent(cb)
     for id, agent in pairs(agents) do
         snax.kill(agent)
@@ -89,13 +79,13 @@ function runner.stop_agent(cb)
     if cb then cb() end
 end
 
-function runner.run_agent(id_start, id_count, per_sec, script, cb)
+function runner.run_agent(id_start, id_count, per_sec, host, script, cb)
     runner.stop_agent()
     codecache.clear()
     script = string.sub(script,1,-5) -- cut .lua
     for id = id_start, id_count do
         local timeout = math.abs((id-1) // per_sec)
-        agents[id] = snax.newservice('agent', id, timeout, script)
+        agents[id] = snax.newservice('agent', id, timeout, script, host)
         agent_count = agent_count + 1
     end
     if cb then cb() end
@@ -103,9 +93,8 @@ end
 
 function runner.start(port, _wsport)
     local id = socket.listen("0.0.0.0", port)
-	skynet.error("Listen web port", port)
     socket.start(id , function(sock, addr) do_http_request(sock, addr) end)
-    
+    skynet.error("http server address: http://127.0.0.1:"..port)
     wsport = _wsport
     id = socket.listen("0.0.0.0", wsport)
     socket.start(id , function(sock, addr) 

@@ -7,16 +7,9 @@
 </head>
 <body class="{{state}}">
     <script>
-        let ws = new WebSocket('ws://' + location.hostname + ':' + {{ wsport }} )
-        ws.onopen = ()=> console.log('websocket connected.')
-        ws.onclose = (ev)=> console.log('websocket closed.', ev)
-        ws.onerror = (err)=> console.log('websocket error.', ev)
-        ws.onmessage = (ev)=> {
-            let data = JSON.parse(ev.data)
-            switch(data.type) {
-                case 'log':
-                    return console.log(data.body)
-            }
+        window.option = {
+            wsurl : 'ws://' + location.hostname + ':' + "{{ wsport }}",
+            script : "{{ script }}"
         }
     </script>
     <div class="top">
@@ -77,9 +70,10 @@
                     <input type="text" name="user_count" id="user_count" class="val" value="{{ num_users or "" }}"/><br>
                     <label for="hatch_rate">Hatch rate <span style="color:#8a8a8a;">(users spawned/second)</span></label>
                     <input type="text" name="hatch_rate" id="hatch_rate" class="val" value="{{ hatch_rate or "" }}"/><br>
+                    <label for="host">Host</label>
+                    <input type="text" name="host" id="host" class="val" autocapitalize="off" autocorrect="off" value="{{ host  or ""}}"/><br>
                     <label for="script">Script </label>
-                    <!-- <input type="text" name="host" id="host" class="val" autocapitalize="off" autocorrect="off" value="{{ host  or "" }}"/><br> -->
-                    <select name="script" id="script" class="val" autocapitalize="off" autocorrect="off">
+                    <select name="script" id="script" class="val" autocapitalize="off" autocorrect="off" >
                         {% for _, script in pairs(scripts) do %}
                             <option>{{script}}</option>
                         {% end %}

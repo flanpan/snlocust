@@ -1,13 +1,11 @@
 local skynet = require "skynet"
 local util = {}
 
-function util.uid()
-    return _G.uid
-end
+function util.uid() return _G.uid end
 
-function util.log(...)
-    return skynet.error(_G.uid, ...)
-end
+function util.host() return _G.host end
+
+function util.log(...) return skynet.error(_G.uid, ...) end
 
 function util.random(a, b)
   if not a then a, b = 0, 1 end

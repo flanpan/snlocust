@@ -1,4 +1,27 @@
 $(window).ready(function() {
+    function createWS() {
+        let ws = new WebSocket(window.option.wsurl)
+        ws.onopen = ()=> console.log('ws connected.')
+        ws.onclose = (ev)=> {
+            console.log('ws closed.', ev)
+            setTimeout(()=>{
+                console.log('ws reconnect...')
+                window.ws = createWS()
+            }, 3000)
+        }
+        ws.onerror = (err)=> console.log('ws error.', ev)
+        ws.onmessage = (ev)=> {
+            let data = JSON.parse(ev.data)
+            switch(data.type) {
+                case 'log':
+                    return console.log(data.body)
+            }
+        }
+        return ws
+    }
+    window.ws = createWS()
+    $('#script').val(window.option.script)
+
     if($("#first_id").length > 0) {
         $("#first_id").focus().select();
     }

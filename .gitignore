@@ -3,3 +3,4 @@
 /dist
 *.so
 *.dSYM
+/config/.setting.json
