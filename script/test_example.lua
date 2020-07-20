@@ -1,14 +1,21 @@
+--[[
+* Hint: start the skynet example server first
+cd 3rd/skynet
+./skynet examples/config
+--]]
+
 package.path = package.path .. '3rd/skynet/examples/?.lua'
 local socket = require "client.socket"
 local proto = require "proto"
 local sproto = require "sproto"
 local util = require "common.util"
 local monitor = require "common.monitor"
+local skynet = require "skynet"
 
 local host = sproto.new(proto.s2c):host "package"
 local request = host:attach(sproto.new(proto.c2s))
 
-local fd = assert(socket.connect("127.0.0.1", 8888))
+local fd = assert(socket.connect(util.address()))
 
 local function send_package(fd, pack)
 	local package = string.pack(">s2", pack)
@@ -49,38 +56,11 @@ local session = 0
 local function send_request(name, args)
 	session = session + 1
 	local str = request(name, args, session)
-	send_package(fd, str)
-	print("Request:", session)
+    send_package(fd, str)
+    monitor.time('test', name, session)
 end
 
 local last = ""
-
-local function print_request(name, args)
-	print("REQUEST", name)
-	if args then
-		for k,v in pairs(args) do
-			print(k,v)
-		end
-	end
-end
-
-local function print_response(session, args)
-	print("RESPONSE", session)
-	if args then
-		for k,v in pairs(args) do
-			print(k,v)
-		end
-	end
-end
-
-local function print_package(t, ...)
-	if t == "REQUEST" then
-		print_request(...)
-	else
-		assert(t == "RESPONSE")
-		print_response(...)
-	end
-end
 
 local function dispatch_package()
 	while true do
@@ -88,16 +68,20 @@ local function dispatch_package()
 		v, last = recv_package(last)
 		if not v then
 			break
-		end
-
-		print_package(host:dispatch(v))
+        end
+        local size = #v
+        local type, session = host:dispatch(v)
+        if type == 'RESPONSE' then
+            monitor.endtime(session, size)
+        else
+            local name = session
+            monitor.incr(name)
+        end
 	end
 end
 
-send_request("handshake")
-
-
 local t = {}
+
 function t.set()
     send_request("set", { what = "hello", value = "world" })
 end
@@ -108,9 +92,11 @@ end
 
 function t.recv()
     dispatch_package()
-	local cmd = socket.readstdin()
-	util.log(cmd)
 end
+
+skynet.timeout(0, function()
+    send_request("handshake")
+end)
 
 local fweight = {
     set = 1,

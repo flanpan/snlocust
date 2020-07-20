@@ -3,8 +3,7 @@ local snax = require "skynet.snax"
 local monitor = {}
 local stats_service = {}
 local counter_service = {}
-local id = 0
-
+local sessions = {}
 local function queryservice(name, type)
     local s
     if type then
@@ -37,15 +36,18 @@ function monitor.decr(name)
     s.post.decr()
 end
 
-function monitor.time(type, name)
+function monitor.time(type, name, session)
+    sessions[session] = {type = type, name = name}
     local s = queryservice(name, type)
-    id = id + 1
-    s.post.time(_G.uid, id)
+    s.post.time(_G.uid, session)
 end
 
-function monitor.endtime(type, name, size, is_failed)
-    local s = queryservice(name, type)
-    s.post.endtime(_G.uid, id, size, is_failed)
+function monitor.endtime(session, size, is_failed)
+    local info = sessions[session]
+    assert(info, 'session not record.')
+    sessions[session] = nil
+    local s = queryservice(info.name, info.type)
+    s.post.endtime(_G.uid, session, size, is_failed)
 end
 
 return monitor

@@ -5,6 +5,14 @@ function util.uid() return _G.uid end
 
 function util.host() return _G.host end
 
+function util.address()
+    local host = util.host()
+    local pos = string.find(host, ':')
+    local ip = string.sub(host, 1, pos - 1)
+    local port = string.sub(host, pos + 1)
+    return ip, port
+end
+
 function util.log(...) return skynet.error(_G.uid, ...) end
 
 function util.random(a, b)
