@@ -39,7 +39,7 @@ end
 function monitor.time(type, name, session)
     sessions[session] = {type = type, name = name}
     local s = queryservice(name, type)
-    s.post.time(_G.uid, session)
+    s.post.time(agent.uid, session)
 end
 
 function monitor.endtime(session, size, is_failed)
@@ -47,7 +47,7 @@ function monitor.endtime(session, size, is_failed)
     assert(info, 'session not record.')
     sessions[session] = nil
     local s = queryservice(info.name, info.type)
-    s.post.endtime(_G.uid, session, size, is_failed)
+    s.post.endtime(agent.uid, session, size, is_failed)
 end
 
 return monitor

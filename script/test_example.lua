@@ -103,4 +103,7 @@ local fweight = {
     get = 2,
     recv = 10
 }
-util.run(t,fweight,0,1)
+
+util.run(t,fweight,0,1, function()
+    socket.close(fd)
+end)

@@ -27,6 +27,7 @@ local function config(cfg)
         _config.host = _config.host or '127.0.0.1:8888'
         _config.script = _config.script or ''
     else -- set
+        _config = _config or {}
         for k, v in pairs(cfg) do
             _config[k] = v
         end

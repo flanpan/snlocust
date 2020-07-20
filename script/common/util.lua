@@ -1,9 +1,9 @@
 local skynet = require "skynet"
 local util = {}
 
-function util.uid() return _G.uid end
+function util.uid() return agent.uid end
 
-function util.host() return _G.host end
+function util.host() return agent.host end
 
 function util.address()
     local host = util.host()
@@ -13,7 +13,7 @@ function util.address()
     return ip, port
 end
 
-function util.log(...) return skynet.error(_G.uid, ...) end
+function util.log(...) return skynet.error(agent.uid, ...) end
 
 function util.random(a, b)
   if not a then a, b = 0, 1 end
@@ -36,7 +36,7 @@ function util.weightedchoice(t)
   end
 end
 
-function util.run(class, fweight, min_interval, max_interval)
+function util.run(class, fweight, min_interval, max_interval, on_exit)
     local funname = util.weightedchoice(fweight)
     local fun = class[funname]
     if type(fun) ~= 'function' then return end
@@ -46,6 +46,7 @@ function util.run(class, fweight, min_interval, max_interval)
       fun()
       util.run(class, fweight, min_interval, max_interval)
     end)
+    agent.on_exit = on_exit
 end
 
 return util
