@@ -3,15 +3,16 @@ local runner = require "runner"
 local skynet = require "skynet"
 local json = require "dkjson"
 local dataset = require "dataset"
+local codecache = require "skynet.codecache"
 
 local SETTING_FILE = 'config/.setting.json'
 local HEADER_JSON = {['content-type'] = 'application/json;charset=utf-8'}
 local STATE = { READY = 'ready', HATCHING = 'hatching', RUNNING = 'running', STOPPING = 'stopping', STOPPED = 'stopped'}
 local route = {}
 local state = STATE.READY
-
-
+local operation_ver = 0
 local _config
+
 local function config(cfg)
     if not cfg then -- get
         if _config then return _config end
@@ -74,6 +75,7 @@ route['/'] = function()
 end
 
 route['/swarm'] = function(body)
+    operation_ver = operation_ver + 1
     local cfg = config({
         script = body.script,
         host = body.host,
@@ -81,9 +83,15 @@ route['/swarm'] = function(body)
         num_users = tonumber(body.user_count or 1) // 1,
         hatch_rate = tonumber(body.hatch_rate or 1) // 1
     })
+
+    runner.stop_agent()
+    dataset.reset()
+    codecache.clear()
+
+    local script = string.sub(cfg.script,1,-5) -- cut .lua
     skynet.fork(function()
-        runner.run_agent(cfg.first_id, cfg.num_users, cfg.hatch_rate, 
-        cfg.host, cfg.script, function()
+        runner.run_agent(operation_ver, cfg.first_id, cfg.num_users, cfg.hatch_rate, 
+        cfg.host, script, function()
             state = STATE.RUNNING
         end)
     end)
@@ -129,5 +137,8 @@ end
 route['/exceptions/csv'] = function()
     return 200
 end
+
+function route.hatching() return state == STATE.HATCHING end
+function route.old_operation(ver) return operation_ver ~= ver end
 
 return route

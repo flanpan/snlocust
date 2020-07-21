@@ -1,6 +1,6 @@
 local skynet = require "skynet"
 
-function init(uid, timeout, script, host)
+function init(uid, script, host)
     _G.agent = {
         uid = uid,
         host = host,
@@ -9,7 +9,7 @@ function init(uid, timeout, script, host)
     agent.uid = uid
     agent.host = host
     math.randomseed(skynet.now())
-    skynet.timeout(timeout * 100, function() require(script) end)
+    require(script)
 end
 
 function exit()
