@@ -2,6 +2,9 @@
 * Hint: start the skynet example server first
 cd 3rd/skynet
 ./skynet examples/config
+
+* Hint: 3rd/skynet/examples/main.lua - default watchdog max_client is 64
+
 --]]
 package.path = package.path .. "3rd/skynet/examples/?.lua;"
 local proto = require "proto"
@@ -48,7 +51,7 @@ local t = {
     set = function() request("set", { what = "hello", value = "world" }) end,
     get = function() 
         local res = request("get", { what = "hello" })
-        assert(res.result == 'world')
+        -- assert(res.result == 'world')
     end
 }
 
