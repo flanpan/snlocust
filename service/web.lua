@@ -9,7 +9,9 @@ local lock_stats
 function init()
     lock_counter = queue()
     lock_stats = queue()
-    runner.start(8001, 8002)
+    local http_port = skynet.getenv('http_port') or 8001
+    local ws_port = skynet.getenv('ws_port') or 8002
+    runner.start(http_port, ws_port)
 end
 
 function accept.broadcast(type, body)

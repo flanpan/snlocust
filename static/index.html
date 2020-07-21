@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Skynet Locust</title>
-    <link rel="stylesheet" type="text/css" href="./static/style.css?v={{ version }}" media="screen">
-    <link rel="shortcut icon" href="./static/img/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="./{{ static_path }}/style.css?v={{ version }}" media="screen">
+    <link rel="shortcut icon" href="./{{ static_path }}/img/favicon.ico" type="image/x-icon"/>
 </head>
 <body class="{{state}}">
     <script>
@@ -14,7 +14,7 @@
     </script>
     <div class="top">
         <div class="top-content container">
-            <img src="./static/img/logo.png?v={{ version }}" class="logo" />
+            <img src="./{{ static_path }}/img/logo.png?v={{ version }}" class="logo" />
             <div class="boxes">
                 <div class="top_box box_url">
                     <div class="label">Script</div>
@@ -244,13 +244,13 @@
     </nav>
 
 
-    <script type="text/javascript" src="./static/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="./static/jquery.jqote2.min.js"></script>
-    <script type="text/javascript" src="./static/jquery.tools.min.js"></script>
+    <script type="text/javascript" src="./{{ static_path }}/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="./{{ static_path }}/jquery.jqote2.min.js"></script>
+    <script type="text/javascript" src="./{{ static_path }}/jquery.tools.min.js"></script>
     <!-- echarts from https://github.com/ecomfe/echarts -->
-    <script type="text/javascript" src="./static/echarts.common.min.js"></script>
+    <script type="text/javascript" src="./{{ static_path }}/echarts.common.min.js"></script>
     <!-- vintage theme of echarts -->
-    <script type="text/javascript" src="./static/vintage.js"></script>
+    <script type="text/javascript" src="./{{ static_path }}/vintage.js"></script>
     <script type="text/x-jqote-template" id="stats-template">
         <![CDATA[
         <tr class="<%=(alternate ? "dark" : "")%> <%=(this.is_aggregated ? "total" : "")%>">
@@ -302,7 +302,7 @@
         <% alternate = !alternate; %>
         ]]>
     </script>
-    <script type="text/javascript" src="./static/chart.js?v={{ version }}"></script>
-    <script type="text/javascript" src="./static/locust.js?v={{ version }}"></script>
+    <script type="text/javascript" src="./{{ static_path }}/chart.js?v={{ version }}"></script>
+    <script type="text/javascript" src="./{{ static_path }}/locust.js?v={{ version }}"></script>
 </body>
 </html>

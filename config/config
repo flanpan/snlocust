@@ -14,3 +14,11 @@ standalone = "0.0.0.0:2600"
 -- snax_interface_g = "snax_g"
 cpath = "./3rd/skynet/cservice/?.so;"..root.."cservice/?.so"
 -- daemon = "./skynet.pid"
+
+----- for snlocust -----
+-- http_port = 8001
+-- ws_port = 8002
+-- debug_port = 2666
+-- script_path = "script"
+-- static_path = "static"
+-- setting_path = ".config.setting.json"

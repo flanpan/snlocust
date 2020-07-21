@@ -5,9 +5,11 @@ local json = require "dkjson"
 local dataset = require "dataset"
 local codecache = require "skynet.codecache"
 
-local SETTING_FILE = 'config/.setting.json'
+local SETTING_FILE = skynet.getenv('setting_path') or 'config/.setting.json'
 local HEADER_JSON = {['content-type'] = 'application/json;charset=utf-8'}
 local STATE = { READY = 'ready', HATCHING = 'hatching', RUNNING = 'running', STOPPING = 'stopping', STOPPED = 'stopped'}
+local script_path = skynet.getenv('script_path') or 'script'
+local static_path = skynet.getenv('static_path') or 'static'
 local route = {}
 local state = STATE.READY
 local operation_ver = 0
@@ -46,7 +48,7 @@ route['/'] = function()
     local scripts = {}
     local valid_script = false
 
-    for file in lfs.dir('script') do
+    for file in lfs.dir(script_path) do
         if string.sub(file, -4) == '.lua' then
             table.insert(scripts,file)
             if not valid_script and cfg.script == file then 
@@ -69,8 +71,9 @@ route['/'] = function()
         wsport = runner.wsport(),
         scripts = scripts,
         script = cfg.script,
+        static_path = static_path,
     }
-    local html = template.compile('static/index.html')(options)
+    local html = template.compile(static_path .. '/index.html')(options)
     return 200, html
 end
 
