@@ -45,11 +45,11 @@ local report = new_report()
 
 function dataset.reset()
     for _, s in pairs(counter_addr) do
-        s.req.reset()
+        snax.kill(s)
     end
     for _, obj in pairs(stats_addr) do
         for _, s in pairs(obj) do
-            s.req.reset()
+            snax.kill(s)
         end
     end
     stats = {}
