@@ -1,5 +1,5 @@
 local util = require "common.util"
-local monitor = require "common.monitor"
+local monitor = require "monitor"
 local tests = {}
 
 function tests.incr1()

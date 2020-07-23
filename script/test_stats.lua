@@ -1,6 +1,6 @@
 local skynet = require "skynet"
 local util = require "common.util"
-local monitor = require "common.monitor"
+local monitor = require "monitor"
 
 local session = 0
 local function get_session()
