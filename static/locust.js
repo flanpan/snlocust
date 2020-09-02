@@ -15,6 +15,8 @@ $(window).ready(function() {
             switch(data.type) {
                 case 'log':
                     return console.log(data.body)
+                case 'console':
+                    return console[data.body.func].apply(console, data.body.args)
             }
         }
         return ws
