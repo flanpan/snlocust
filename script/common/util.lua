@@ -36,7 +36,7 @@ function util.weightedchoice(t)
   end
 end
 
-function util.run(class, fweight, min_interval, max_interval, on_exit)
+function util.run(class, fweight, min_interval, max_interval)
     local funname = util.weightedchoice(fweight)
     local fun = class[funname]
     if type(fun) ~= 'function' then return end
@@ -46,7 +46,6 @@ function util.run(class, fweight, min_interval, max_interval, on_exit)
       fun()
       util.run(class, fweight, min_interval, max_interval)
     end)
-    agent.on_exit = on_exit
 end
 
 return util

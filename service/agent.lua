@@ -1,19 +1,31 @@
 local skynet = require "skynet"
 
-function init(uid, script, host)
-    _G.agent = {
-        uid = uid,
-        host = host,
-        on_exit = nil
-    }
-    agent.uid = uid
-    agent.host = host
-    math.randomseed(skynet.now())
-    require(script)
-end
+local script, host, uid = ...
 
-function exit()
-    if type(agent.on_exit) == 'function' then
-        agent.on_exit()
+_G.agent = {
+    uid = tonumber(uid),
+    host = host
+}
+_G.console = require "console"
+
+require(script)
+
+local CMD = {}
+
+function CMD.exit()
+    if type(_G.exit) == 'function' then
+        _G.exit()
     end
 end
+
+skynet.start(function()
+    skynet.dispatch("lua", function(_,_,cmd)
+        local f = CMD[cmd]
+        assert(f, cmd)
+    end)
+    skynet.fork(function()
+        if type(_G.main) == "function" then
+            _G.main(uid, host)
+        end
+    end)
+end)
