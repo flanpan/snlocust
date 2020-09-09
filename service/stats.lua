@@ -98,7 +98,7 @@ function accept.endtime(uid, id, size, failed)
     end
     local total_res = data.num_failures + data.num_requests
     data.avg_response_time = total_response_time / total_res
-    total_content_length = total_content_length + size
+    total_content_length = total_content_length + (size or 0)
     data.avg_content_length = total_content_length / total_res
     tmp_reqs = tmp_reqs + 1
     table.insert(lastest_res_time, delay)

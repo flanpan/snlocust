@@ -8,6 +8,7 @@ function init(uid, script, host)
     }
     agent.uid = uid
     agent.host = host
+    _G.console = require "console"
     math.randomseed(skynet.now())
     require(script)
 end
