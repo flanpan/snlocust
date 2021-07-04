@@ -7,7 +7,6 @@ local urllib = require "http.url"
 local json = require "dkjson"
 local dataset = require "dataset"
 local lfs = require "lfs"
-local snax = require "skynet.snax"
 require "skynet.manager"
 
 local runner = {}
@@ -70,7 +69,8 @@ function runner.wsport() return wsport end
 
 function runner.stop_agent(cb)
     for id, agent in pairs(agents) do
-        snax.kill(agent)
+        skynet.send(agent, "lua", "exit")
+        skynet.kill(agent)
         skynet.error('agent:', id, 'exit.')
     end
     agents = {}
@@ -87,17 +87,18 @@ function runner.run_agent(ver, id_start, id_count, per_sec, host, script, cb)
         swarm_num = id_count - agent_count
     end
 
+    local id = id_start
     for i = 1, swarm_num do
-        agents[id_start] = snax.newservice('agent', id_start, script, host)
+        agents[id] = skynet.newservice("agent", script, host, id)
         agent_count = agent_count + 1
-        id_start = id_start + 1
+        id = id + 1
     end
 
     if agent_count >= id_count then
         return cb()
     else
         skynet.timeout(100, function()
-            runner.run_agent(ver, id_start, id_count, per_sec, host, script, cb)
+            runner.run_agent(ver, id, id_count, per_sec, host, script, cb)
         end)
     end
 end

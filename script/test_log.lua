@@ -16,6 +16,7 @@ local fweight = {
     log2 = 2
 }
 
-util.run(tests, fweight, 2, 2)
-
--- log will show in web dev console
+function main()
+    -- log will show in web dev console
+    util.run(tests, fweight, 2, 2)
+end

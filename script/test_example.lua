@@ -55,14 +55,13 @@ local t = {
     end
 }
 
-skynet.fork(function()
-    channel:connect(false)
-    request('handshake')
-end)
-
 local fweight = {
     set = 1,
     get = 2,
 }
 
-util.run(t,fweight,2,2)
+function main()
+    channel:connect(false)
+    request('handshake')
+    util.run(t,fweight,2,2)
+end

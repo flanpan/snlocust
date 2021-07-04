@@ -1,3 +1,4 @@
+local skynet = require "skynet"
 local snax = require "skynet.snax"
 
 local monitor = {}
@@ -39,7 +40,7 @@ end
 function monitor.time(type, name, session)
     sessions[session] = {type = type, name = name}
     local s = queryservice(name, type)
-    s.post.time(agent.uid, session)
+    s.post.time(skynet.self(), session)
 end
 
 function monitor.endtime(session, size, is_failed)
@@ -47,7 +48,7 @@ function monitor.endtime(session, size, is_failed)
     assert(info, 'session not record.')
     sessions[session] = nil
     local s = queryservice(info.name, info.type)
-    s.post.endtime(agent.uid, session, size, is_failed)
+    s.post.endtime(skynet.self(), session, size, is_failed)
 end
 
 return monitor

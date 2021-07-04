@@ -33,4 +33,6 @@ local fweight = {
     test2 = 2
 }
 
-util.run(tests, fweight, 2, 2)
+function main()
+    util.run(tests, fweight, 2, 2)
+end

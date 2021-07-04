@@ -25,4 +25,6 @@ local fweight = {
     decr2 = 1
 }
 
-util.run(tests, fweight, 1, 2)
+function main()
+    util.run(tests, fweight, 1, 2)
+end
