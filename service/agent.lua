@@ -1,9 +1,9 @@
 local skynet = require "skynet"
 
 local script, host, uid = ...
-
+uid = tonumber(uid)
 _G.agent = {
-    uid = tonumber(uid),
+    uid = uid,
     host = host
 }
 _G.console = require "console"

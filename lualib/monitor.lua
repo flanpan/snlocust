@@ -27,28 +27,45 @@ local function queryservice(name, type)
     return s
 end
 
-function monitor.incr(name)
+function monitor.incr(name, num)
+    assert(name)
     local s = queryservice(name)
-    s.post.incr()
+    if type(num) ~= "number" then
+        num = 1
+    end
+    s.post.incr(num)
 end
 
-function monitor.decr(name)
+function monitor.decr(name, num)
+    assert(name)
     local s = queryservice(name)
-    s.post.decr()
+    if type(num) ~= "number" then
+        num = 1
+    end
+    s.post.decr(num or 1)
+end
+
+function monitor.set(name, cnt)
+    assert(name)
+    local s = queryservice(name)
+    assert(type(cnt) == "number")
+    s.post.set(cnt)
 end
 
 function monitor.time(type, name, session)
+    assert(type and name and session)
     sessions[session] = {type = type, name = name}
     local s = queryservice(name, type)
     s.post.time(skynet.self(), session)
 end
 
 function monitor.endtime(session, size, is_failed)
+    assert(session)
     local info = sessions[session]
     assert(info, 'session not record.')
     sessions[session] = nil
     local s = queryservice(info.name, info.type)
-    s.post.endtime(skynet.self(), session, size, is_failed)
+    s.post.endtime(skynet.self(), session, size or 0, is_failed)
 end
 
 return monitor

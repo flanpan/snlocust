@@ -26,12 +26,17 @@ function response.reset()
     hold = false
 end
 
-function accept.incr()
-    count = count + 1
+function accept.incr(num)
+    count = count + num
     report()
 end
 
-function accept.decr()
-    count = count - 1
+function accept.decr(num)
+    count = count - num
+    report()
+end
+
+function accept.set(num)
+    count = num
     report()
 end
