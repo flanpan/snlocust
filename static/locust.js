@@ -144,6 +144,8 @@ var WorkerDesc = false;
 var report;
 
 function renderTable(report) {
+    report.stats = report.stats instanceof Array ? report.stats : []
+    report.errors = report.errors instanceof Array ? report.errors : []
     var totalRow = report.stats.pop();
     totalRow.is_aggregated = true;
     var sortedStats = (report.stats).sort(sortBy(sortAttribute, desc));
@@ -229,6 +231,7 @@ updateStats();
 
 function updateExceptions() {
     $.get('./exceptions', function (data) {
+        data.exceptions = data.exceptions instanceof Array ? data.exceptions : []
         $('#exceptions tbody').empty();
         $('#exceptions tbody').jqoteapp(exceptions_tpl, data.exceptions);
         setTimeout(updateExceptions, 5000);
